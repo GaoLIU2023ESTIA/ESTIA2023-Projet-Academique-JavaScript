@@ -6,13 +6,14 @@ import ObstacleTexture from './ObstacleTexture.js';
 import { ajouteEcouteurSouris, ajouteEcouteursClavier, inputState, mousePos } from './ecouteurs.js';
 import { circRectsOverlap, rectsOverlap } from './collisions.js';
 import { loadAssets } from './assets.js';
-// import SpriteCasseBrique from './SpriteCasseBrique.js';
+import SpriteCasseBrique from './SpriteCasseBrique.js';
 import Sortie from './Sortie.js';
 import Coin from './Coin.js';
 import MonstreAnime from './MonstreAnime.js';
+import MushroomAnime from './MushroomAnime.js';
 
 import { creerLesNiveaux, tabNiveaux } from './levels.js';
-// import Brick from './Brick.js';
+import Brick from './Brick.js';
 import Timer from './Timer.js';
 
 
@@ -31,7 +32,8 @@ let hiScores = [
 ];
 let tableauDesObjetsGraphiques = [];
 let spritesheetCB;
-// let briqueBleue1;
+let briqueBleue1;
+let nbVies = 3;
 
 
 
@@ -68,10 +70,10 @@ function startGame(assetsLoaded) {
     // On crée les niveaux
     creerLesNiveaux(assets);
 
-    // spritesheetCB = new SpriteCasseBrique(assets.spritesheetCasseBrique);
+    spritesheetCB = new SpriteCasseBrique(assets.spritesheetCasseBrique);
     // spritesheetCB.draw(ctx, "briqueBleue", 100, 100);
-    // briqueBleue1 = new Brick(100, 100, "briqueBleue", spritesheetCB, 10);
-    // briqueBleue1.cassee = true;
+    briqueBleue1 = new Brick(100, 100, "briqueBleue", spritesheetCB, 10);
+    briqueBleue1.cassee = true;
 
     // appelée quand tous les assets sont chargés
     console.log("StartGame : tous les assets sont chargés");
@@ -120,7 +122,10 @@ function creerDesObstaclesLevel1() {
     tableauDesObjetsGraphiques.push(new ObstacleAnimeClignotant(350, 0, 30, 300, 'red', 1));
     let url = 'https://img.freepik.com/free-vector/seamless-japanese-inspired-geometric-pattern_53876-80353.jpg';
     tableauDesObjetsGraphiques.push(new ObstacleTexture(550, 0, 30, 300, url));
-    tableauDesObjetsGraphiques.push(new MonstreAnime(150, 100, 50, 50, assets.monstreAnime, 1));
+    tableauDesObjetsGraphiques.push(new MonstreAnime(150, 100, 50, 50, 1, assets.monstreAnime));
+    tableauDesObjetsGraphiques.push(new MushroomAnime(150, 200, 50, 50, 3, assets.mushroomAnime));
+    tableauDesObjetsGraphiques.push(new MushroomAnime(150, 200, 50, 50, 3, assets.mushroomAnime));
+
 }
 
 function dessinerLesObjetsGraphiques(ctx) {
@@ -185,7 +190,7 @@ function animationLoop() {
             afficheScore(ctx);
             timer.draw(ctx, 150, 30);
 
-            //briqueBleue1.draw(ctx);
+            // briqueBleue1.draw(ctx);
 
             // 3 - on déplace les objets
             testeEtatClavierPourJoueur();
@@ -227,8 +232,8 @@ function afficheMenuStart(ctx) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'white';
     ctx.font = "130px Arial";
-    ctx.fillText("Press space to start", 190, 100);
-    ctx.strokeText("Press space to start", 190, 100);
+    ctx.fillText("Press space to start", 120, 100);
+    ctx.strokeText("Press space to start", 120, 100);
     if (inputState.space) {
         gameState = 'jeuEnCours';
     }
@@ -326,10 +331,20 @@ function detecteCollisionJoueurAvecObstaclesEtPieces() {
     let collisionExist = false;
     // On va tester si le joueur est en collision avec un des obstacles
     tableauDesObjetsGraphiques.forEach((o, index) => {
-        if (o instanceof Obstacle) {
+        if (o instanceof ObstacleAnime) {
             if (rectsOverlap(joueur.x, joueur.y, joueur.l, joueur.h, o.x, o.y, o.l, o.h)) {
                 collisionExist = true;
                 assets.plop.play();
+            }
+        }
+        if (o instanceof MonstreAnime) {
+            if (rectsOverlap(joueur.x, joueur.y, joueur.l, joueur.h, o.x, o.y, o.l, o.h)) {
+                gameState = 'gameOver';
+                assets.plop.play();
+                nbVies -= 1;
+                if (nbVies == 0) {
+                    gameState = 'gameOver';
+                }
             }
         } else if(o instanceof Coin) {
             if (rectsOverlap(joueur.x, joueur.y, joueur.l, joueur.h, o.x, o.y, o.l, o.h)) {
@@ -341,17 +356,19 @@ function detecteCollisionJoueurAvecObstaclesEtPieces() {
                 // 2ème paramètre : le nombre d'éléments à supprimer
                 tableauDesObjetsGraphiques.splice(index, 1);
             }
-        }else if(o instanceof MonstreAnime) {
+        }else if(o instanceof MushroomAnime) {
             if (rectsOverlap(joueur.x, joueur.y, joueur.l, joueur.h, o.x, o.y, o.l, o.h)) {
                 // collision avec un monstre
-                gameState = 'gameOver';
+                joueur.nbVies += 1;
+                assets.victory.play();
+                tableauDesObjetsGraphiques.splice(index, 1);
             }
         }
     });
 
     if (collisionExist) {
         joueur.couleur = 'red';
-        gameState = 'gameOver';
+        // gameState = 'gameOver';
         joueur.x -= 10;
     } else {
         joueur.couleur = 'green';

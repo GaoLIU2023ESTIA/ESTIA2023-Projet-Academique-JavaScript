@@ -5,6 +5,7 @@ let assets;
 let assetsToLoadURLs = {
     coin: {url:"../assets/images/coins.png"},
     monstre: {url:"../assets/images/monstre.png"},
+    mushroom: {url:"../assets/images/mushroom.png"},
     pattern1: { url: '../assets/images/pattern1.jpg', pattern: true },
     spritesheetCasseBrique: { url: "../assets/images/spriteSheetCasseBricks.png" },
     joueur: { url: '../assets/images/mario.png' }, // http://www.clipartlord.com/category/weather-clip-art/winter-clip-art/

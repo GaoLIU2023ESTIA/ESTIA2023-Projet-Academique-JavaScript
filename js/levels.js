@@ -5,6 +5,8 @@ import Obstacle from "./ObstacleClass.js";
 import ObstacleTexture from "./ObstacleTexture.js";
 import Coin from "./Coin.js";
 import MonstreAnime from "./MonstreAnime.js";
+import MushroomAnime from "./MushroomAnime.js";
+
 
 let tabNiveaux = [];
 
@@ -17,6 +19,8 @@ function creerLesNiveaux(assets) {
             new Coin(100, 100, 50, 50, assets.coin, 10),
             new Coin(200, 150, 50, 50, assets.coin, 10),
             new Coin(400, 300, 50, 50, assets.coin, 10),
+            new MushroomAnime(150, 200, 50, 50, 3, assets.mushroom),
+            new MonstreAnime (150, 100, 50, 50, 2, assets.monstre),
         ],
         temps: 60,
         sortie : sortieLevel1,
@@ -44,6 +48,24 @@ function creerLesNiveaux(assets) {
         musique: "humbug"
     }
     tabNiveaux.push(level2);
+
+    let sortieLevel3 = new Sortie(600, 300, 40, "orange");
+    let level3 = {
+        objetsGraphiques: [
+            sortieLevel3,
+            new ObstacleAnimeClignotant(450, 0, 30, 300, 'green', 1),
+            new Coin(200, 150, 50, 50, assets.coin, 10),
+            new Coin(500, 300, 50, 50, assets.coin, 10),
+            new MonstreAnime (350, 100, 50, 50, 1, assets.monstre),
+        ],
+        sortie: sortieLevel3,
+        temps: 30,
+        titre : "Niveau 3",
+        description: "Ne te laisse pas faire !",
+        background: "bgn2",
+        musique: "humbug"
+    }
+    tabNiveaux.push(level3);
 }
 
 

@@ -102,5 +102,15 @@ export default class Joueur extends ObjetGraphique {
             this.x = 0;
             this.vitesse = -this.vitesse;
         }
+        if (this.y + this.h > hauteurCanvas) {
+            // On positionne le joueur à la limite du canvas, au point de contact
+            this.y = hauteurCanvas - this.h;
+            this.vitesse = -this.vitesse;
+        }
+        if (this.y < 0) {
+            // On positionne le joueur à la limite du canvas, au point de contact
+            this.y = 0;
+            this.vitesse = -this.vitesse;
+        }
     }
 }
